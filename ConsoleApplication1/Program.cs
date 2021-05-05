@@ -10,7 +10,7 @@ namespace ConsoleApplication1
 {
     class Program
     {
-        private const string VERSION = "0.2";
+        private const string VERSION = "0.3";
         private const string GLOBAL_DATA_URL = "https://coronavirusapi-france.vercel.app/FranceLiveGlobalData";
         private const string DEPARTEMENT_DATA_URL = "https://coronavirusapi-france.vercel.app/LiveDataByDepartement?";
         private const string ALL_DEPARTEMENT = "https://coronavirusapi-france.vercel.app/AllLiveData";
