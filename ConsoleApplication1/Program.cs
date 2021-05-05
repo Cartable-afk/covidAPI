@@ -34,7 +34,7 @@ namespace ConsoleApplication1
         {
             var pr = new Printer()
             {
-                TableWidth = 96
+                TableWidth = 105
             };
 
             pr.Line();
