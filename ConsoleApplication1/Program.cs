@@ -10,19 +10,19 @@ namespace ConsoleApplication1
 {
     class Program
     {
-        private const string VERSION = "0.11";
+        private const string VERSION = "0.2";
         private const string GLOBAL_DATA_URL = "https://coronavirusapi-france.vercel.app/FranceLiveGlobalData";
         private const string DEPARTEMENT_DATA_URL = "https://coronavirusapi-france.app/LiveDataByDepartement?";
         private const string ALL_DEPARTEMENT = "https://coronavirusapi-france.app/AllLiveData";
 
         private static HttpClient client;
-        
-        static async Task<string> GetGlobalDataAsync()
+        private static Printer printer;
+        static async Task<string> GetGlobalDataAsync(string requestURL)
         {
             var data = string.Empty;
-            var response = await client.GetAsync(GLOBAL_DATA_URL);
+            var response = await client.GetAsync(requestURL);
             
-            if (true)
+            if (response.IsSuccessStatusCode)
             {
                 data = await response.Content.ReadAsStringAsync();
             }
@@ -41,11 +41,42 @@ namespace ConsoleApplication1
                 args = Console.ReadLine().Split(' ');
                 var commande = args[0];
 
+                printer = new Printer()
+                {
+                    TableWidth = 96
+                };
+
                 switch (commande)
                 {
                     case "global":
-                        var result = GetGlobalDataAsync().GetAwaiter().GetResult();
-                        Console.WriteLine(result);
+                        var json = GetGlobalDataAsync(GLOBAL_DATA_URL).GetAwaiter().GetResult();
+                        var data = JObject.Parse(json).SelectToken("FranceGlobalLiveData").ToObject<List<Data>>().First();
+                        printer.Line();
+                        printer.Row("Date", "Pays", "Décès", "Guéris", "Hospitalisé", "Réanimation");
+                        printer.Line();
+                        printer.Row(data.date.ToString("dd/MM/yyyyy"), data.nom, data.deces.ToString(), data.gueris.ToString(), data.hospitalises.ToString(), data.reanimation.ToString());
+                        printer.Line();
+                        break;
+
+                    case "departement":
+                        Console.WriteLine("Entrez un département : ");
+                        var departement = DEPARTEMENT_DATA_URL + "" + Console.ReadLine();
+                        try {
+                            departement.ToString();
+
+                        } catch (Exception e) {
+                            Console.WriteLine(e);
+                            Console.WriteLine("Entrez un nom de département valide (uniquement du texte)");
+
+                        }
+
+                        json = GetGlobalDataAsync(DEPARTEMENT_DATA_URL).GetAwaiter().GetResult();
+                        data = JObject.Parse(json).SelectToken("FranceGlobalLiveData").ToObject<List<Data>>().First();
+                        printer.Line();
+                        printer.Row("Date", "Pays", "Décès", "Guéris", "Hospitalisé", "Réanimation");
+                        printer.Line();
+                        printer.Row(data.date.ToString("dd/MM/yyyy"), data.nom, data.deces.ToString(), data.gueris.ToString(), data.hospitalises.ToString(), data.reanimation.ToString());
+                        printer.Line();
                         break;
 
                     case "exit":

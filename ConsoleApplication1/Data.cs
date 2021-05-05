@@ -1,10 +1,12 @@
-﻿namespace ConsoleApplication1
+﻿using System;
+
+namespace ConsoleApplication1
 {
     public class Data
     {
         public string code { get; set; }
         public string nom { get; set; }
-        public string date { get; set; }
+        public DateTime date { get; set; }
         public int hospitalises { get; set; }
         public int reanimation { get; set; }
         public int nouvellesHospitalisations { get; set; }
