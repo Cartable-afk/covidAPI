@@ -12,8 +12,8 @@ namespace ConsoleApplication1
     {
         private const string VERSION = "0.2";
         private const string GLOBAL_DATA_URL = "https://coronavirusapi-france.vercel.app/FranceLiveGlobalData";
-        private const string DEPARTEMENT_DATA_URL = "https://coronavirusapi-france.app/LiveDataByDepartement?";
-        private const string ALL_DEPARTEMENT = "https://coronavirusapi-france.app/AllLiveData";
+        private const string DEPARTEMENT_DATA_URL = "https://coronavirusapi-france.vercel.app/LiveDataByDepartement?";
+        private const string ALL_DEPARTEMENT = "https://coronavirusapi-france.vercel.app/AllLiveData";
 
         private static HttpClient client;
         private static Printer printer;
@@ -59,8 +59,11 @@ namespace ConsoleApplication1
                         break;
 
                     case "departement":
+
                         Console.WriteLine("Entrez un département : ");
-                        var departement = DEPARTEMENT_DATA_URL + "" + Console.ReadLine();
+
+                        var departement = DEPARTEMENT_DATA_URL + "Departement=" + Console.ReadLine();
+
                         try {
                             departement.ToString();
 
@@ -70,13 +73,29 @@ namespace ConsoleApplication1
 
                         }
 
-                        json = GetGlobalDataAsync(DEPARTEMENT_DATA_URL).GetAwaiter().GetResult();
-                        data = JObject.Parse(json).SelectToken("FranceGlobalLiveData").ToObject<List<Data>>().First();
+                        json = GetGlobalDataAsync(departement).GetAwaiter().GetResult();
+                        data = JObject.Parse(json).SelectToken("LiveDataByDepartement").ToObject<List<Data>>().First();
+
                         printer.Line();
                         printer.Row("Date", "Pays", "Décès", "Guéris", "Hospitalisé", "Réanimation");
                         printer.Line();
                         printer.Row(data.date.ToString("dd/MM/yyyy"), data.nom, data.deces.ToString(), data.gueris.ToString(), data.hospitalises.ToString(), data.reanimation.ToString());
                         printer.Line();
+                        break;
+
+                    case "allData":
+                        json = GetGlobalDataAsync(ALL_DEPARTEMENT).GetAwaiter().GetResult();
+                        data = JObject.Parse(json).SelectToken("allLiveFranceData").ToObject<List<Data>>().First();
+
+                        printer.Line();
+                        printer.Row("Date", "Pays", "Décès", "Guéris", "Hospitalisé", "Réanimation");
+                        printer.Line();
+
+                        for (int i=0; i < 102; i++)
+                        {
+                            printer.Row(data.date.ToString("dd/MM/yyyyy"), data.nom, data.deces.ToString(), data.gueris.ToString(), data.hospitalises.ToString(), data.reanimation.ToString());
+                            printer.Line();
+                        }                       
                         break;
 
                     case "exit":
