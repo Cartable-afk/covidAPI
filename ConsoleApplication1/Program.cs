@@ -10,7 +10,7 @@ namespace ConsoleApplication1
 {
     class Program
     {
-        private const string VERSION = "0.3";
+        private const string VERSION = "0.4";
         private const string GLOBAL_DATA_URL = "https://coronavirusapi-france.vercel.app/FranceLiveGlobalData";
         private const string DEPARTEMENT_DATA_URL = "https://coronavirusapi-france.vercel.app/LiveDataByDepartement?";
         private const string ALL_DEPARTEMENT = "https://coronavirusapi-france.vercel.app/AllLiveData";
@@ -84,16 +84,16 @@ namespace ConsoleApplication1
                         break;
 
                     case "allData":
-                        json = GetGlobalDataAsync(ALL_DEPARTEMENT).GetAwaiter().GetResult();
-                        data = JObject.Parse(json).SelectToken("allLiveFranceData").ToObject<List<Data>>().First();
-
+                        json = GetGlobalDataAsync(ALL_DEPARTEMENT).GetAwaiter().GetResult();                                //Obtention du JSON en brute
+                        var datas = JObject.Parse(json).SelectToken("allLiveFranceData").ToObject<List<Data>>().ToArray();        //Deserialisation du JSON pour obtenir un Araway 
+                        
                         printer.Line();
                         printer.Row("Date", "Pays", "Décès", "Guéris", "Hospitalisé", "Réanimation");
                         printer.Line();
-
+                        
                         for (int i=0; i < 102; i++)
                         {
-                            printer.Row(data.date.ToString("dd/MM/yyyyy"), data.nom, data.deces.ToString(), data.gueris.ToString(), data.hospitalises.ToString(), data.reanimation.ToString());
+                            printer.Row(datas[i].date.ToString("dd/MM/yyyyy"), datas[i].nom, datas[i].deces.ToString(), datas[i].gueris.ToString(), datas[i].hospitalises.ToString(), datas[i].reanimation.ToString());
                             printer.Line();
                         }                       
                         break;
